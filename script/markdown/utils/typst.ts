@@ -1,6 +1,6 @@
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 
-let compiler: NodeCompiler;
+const compiler: NodeCompiler = NodeCompiler.create();
 
 /**
  * Compile Typst code to SVG.
@@ -11,11 +11,13 @@ let compiler: NodeCompiler;
  * @see https://myriad-dreamin.github.io/typst.ts/cookery/guide/all-in-one-node.html
  */
 export default (code: string): string => {
-    if (!compiler) {
-        compiler = NodeCompiler.create();
-    } else {
-        compiler.evictCache(10);
-    }
+    compiler.evictCache(10);
 
-    return compiler.svg({ mainFileContent: code });
+    code = `#set page(width: auto, height: auto, margin: 5pt)\n#set text(size: 18pt)\n${code}`;
+
+    const svg = compiler.svg({
+        mainFileContent: code,
+    });
+
+    return svg;
 };

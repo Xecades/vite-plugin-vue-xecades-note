@@ -1,14 +1,12 @@
 {
     "compilerOptions": {
-        "target": "es2020",
-        "module": "node16",
+        "target": "es2018",
+        "module": "esnext",
+        "lib": ["esnext", "DOM"],
+        "moduleResolution": "node",
+        "esModuleInterop": true,
         "strict": true,
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "verbatimModuleSyntax": true,
-        "outDir": "./lib"
-    },
-    "include": ["src", "test"],
-    "exclude": ["node_modules"]
+        "strictNullChecks": true,
+        "resolveJsonModule": true
+    }
 }
