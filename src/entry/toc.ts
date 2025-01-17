@@ -38,6 +38,8 @@ export default (tokens: Token[], entry: Entry): MarkdownHeader[] => {
                 { entry, tsx: true } as MarkdownItEnv
             );
 
+            if (title.trim().length == 0) continue;
+
             headers.push({
                 level: level,
                 title: title.trim(),

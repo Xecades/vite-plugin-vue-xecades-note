@@ -17,7 +17,6 @@ export default (entries: Entry[], options: NotePluginOptions) => {
 
     watchEffect(async () => {
         let cache: string = injection(options.componentDir);
-        cache += `import note from "${options.layoutImportPath}";\n`;
         cache += `import type { CachedRouteRecord } from "${options.pluginName}";\n`;
         cache += "const routes: CachedRouteRecord[] = [\n";
 
@@ -27,7 +26,6 @@ export default (entries: Entry[], options: NotePluginOptions) => {
             const time = post.time;
 
             const import_slot: string = "<IMP_SLOT>";
-            const component_slot: string = "<COM_SLOT>";
             const toc_slot: string = "<TOC_SLOT>";
             const toc_title_slot: string = "<TOC_TITLE_SLOT>";
 
@@ -53,11 +51,10 @@ export default (entries: Entry[], options: NotePluginOptions) => {
 
             const route = {
                 path: path,
-                component: component_slot,
+                component: import_slot,
                 meta: {
                     pathname: post.pathname,
                     category: post.category,
-                    body: import_slot as any,
                     attr: post.front_matter,
                     toc: toc_slot as any,
                     created: time.created,
@@ -74,9 +71,8 @@ export default (entries: Entry[], options: NotePluginOptions) => {
                 JSON.stringify(route)
                     .replace(
                         `"${import_slot}"`,
-                        `() => import("${post.postImportPath}")`
+                        `() => import("${post.postImportPath}.vue")`
                     )
-                    .replace(`"${component_slot}"`, "note")
                     .replace(`"${toc_slot}"`, toc) + ",\n";
 
             if (post.type === "404") error_cache = stringified;

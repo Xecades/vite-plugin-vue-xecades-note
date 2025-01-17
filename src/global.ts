@@ -12,9 +12,6 @@ export interface NotePluginOptions {
 
     /** Name of the plugin. */
     pluginName?: string;
-
-    /** Path of the Vue layout. */
-    layoutImportPath: string;
 }
 
 /**
@@ -108,9 +105,6 @@ export interface RouteMeta {
 
     /** Category of the route, empty string for `/index` and 404 page */
     category: string;
-
-    /** Body component */
-    body: () => Promise<{ default: () => JSX.Element }>;
 
     /** Parsed front matter */
     attr: MarkdownFrontMatter;
