@@ -1,7 +1,7 @@
 import { md } from "./parse";
 
 import type Token from "markdown-it/lib/token.mjs";
-import type { MarkdownHeader } from "../../../types";
+import type { MarkdownHeader } from "../global";
 
 /**
  * Generate TOC from tokens.
@@ -39,7 +39,7 @@ export default (tokens: Token[]): MarkdownHeader[] => {
             headers.push({
                 level: level,
                 title: title.trim(),
-                link: headers.length === 0 ? "t" : `t-${headers.length + 1}`,
+                hash: headers.length === 0 ? "t" : `t-${headers.length + 1}`,
             });
         }
     }

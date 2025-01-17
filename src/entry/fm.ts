@@ -1,9 +1,6 @@
 import fm from "front-matter";
-
-import type {
-    MarkdownFrontMatter,
-    MarkdownFrontMatterParsed,
-} from "../../../types";
+import type { MarkdownFrontMatterParsed } from "../global";
+import type { MarkdownFrontMatter } from "../convention";
 
 /**
  * Parse front matter from plain markdown text.

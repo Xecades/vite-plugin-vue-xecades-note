@@ -1,13 +1,13 @@
 import fs from "fs-extra";
 import Fuse from "fuse.js";
 import { watchEffect } from "vue";
-import { Post } from "../utils/post";
+import { Entry } from "../entry";
 
 import type { IFuseOptions } from "fuse.js";
-import type { SearchTarget } from "../../types";
+import type { NotePluginOptions, SearchTarget } from "../global";
 
 /** @see https://www.fusejs.io/api/options.html */
-const options: IFuseOptions<SearchTarget> = {
+const Fuse_Options: IFuseOptions<SearchTarget> = {
     keys: ["title", "content"],
     includeMatches: true,
     ignoreLocation: true,
@@ -19,35 +19,35 @@ const options: IFuseOptions<SearchTarget> = {
  *
  * @note This module caches the purged html (.text).
  *
- * @param posts - Parsed post objects.
+ * @param entries - Parsed post objects.
  */
-export default (posts: Post[]) => {
+export default (entries: Entry[], options: NotePluginOptions) => {
     const dist: string = `./cache/search.ts`;
 
     watchEffect(() => {
-        const searchTarget: SearchTarget[] = posts
-            .filter((post): boolean => post.type !== "404")
+        const searchTarget: SearchTarget[] = entries
+            .filter((entry): boolean => entry.type !== "404")
             .map(
-                (post): SearchTarget => ({
-                    title: post.front_matter.title,
-                    content: post.text,
-                    link: post.link,
-                    is_index: post.type === "index" || post.type === "root",
+                (entry): SearchTarget => ({
+                    title: entry.front_matter.title,
+                    content: entry.text,
+                    link: entry.url,
+                    is_index: entry.type === "index" || entry.type === "root",
                 })
             );
 
         const index = Fuse.createIndex<SearchTarget>(
-            options.keys!,
+            Fuse_Options.keys!,
             searchTarget
         );
 
         const idx_inj: string = JSON.stringify(index.toJSON());
         const db_inj: string = JSON.stringify(searchTarget);
-        const config_inj: string = JSON.stringify(options);
+        const config_inj: string = JSON.stringify(Fuse_Options);
 
         const cache: string =
             'import Fuse from "fuse.js";\n' +
-            'import type { CachedSearchFn, SearchTarget } from "@script/types";\n' +
+            `import type { CachedSearchFn, SearchTarget } from "${options.pluginName}";\n` +
             'import type { FuseIndex, IFuseOptions } from "fuse.js";\n' +
             `const idx = ${idx_inj};\n` +
             `const db: SearchTarget[] = ${db_inj};\n` +

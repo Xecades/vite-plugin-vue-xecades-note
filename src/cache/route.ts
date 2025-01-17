@@ -1,30 +1,30 @@
 import fs from "fs-extra";
 import injection from "../utils/injection";
-import { Post } from "../utils/post";
+import { Entry } from "../entry";
 import { watchEffect } from "vue";
 
-import type { RouteMeta } from "../../types";
+import type { NotePluginOptions, RouteMeta } from "../global";
 
 /**
  * Generate `./cache/routes.tsx` from parsed markdown data.
  *
  * @note This module generates children routes for Vue SFCs.
  *
- * @param posts - Parsed post objects.
+ * @param entries - Parsed post objects.
  */
-export default (posts: Post[]) => {
+export default (entries: Entry[], options: NotePluginOptions) => {
     const dist: string = `./cache/routes.tsx`;
 
     watchEffect(async () => {
-        let cache: string = injection();
-        cache += `import note from "@/layout/note.vue";\n`;
-        cache += `import type { CachedRouteRecord } from "@script/types";\n`;
+        let cache: string = injection(options.componentDir);
+        cache += `import note from "${options.layoutImportPath}";\n`;
+        cache += `import type { CachedRouteRecord } from "${options.pluginName}";\n`;
         cache += "const routes: CachedRouteRecord[] = [\n";
 
         let error_cache: string = "";
 
-        for (const post of posts) {
-            const time_data = post.time_data;
+        for (const post of entries) {
+            const time = post.time;
 
             const import_slot: string = "<IMP_SLOT>";
             const component_slot: string = "<COM_SLOT>";
@@ -44,11 +44,11 @@ export default (posts: Post[]) => {
                 "]";
 
             const path: string =
-                post.type === "404" ? `/:pathMatch(.*)` : post.link;
+                post.type === "404" ? `/:pathMatch(.*)` : post.url;
 
-            let parent = posts.find((x) => x.link === post.back_link);
-            if (post.back_link != "" && parent === undefined)
-                throw new Error(`Invalid back link: ${post.back_link}`);
+            let parent = entries.find((x) => x.url === post.backUrl);
+            if (parent === undefined)
+                throw new Error(`Invalid back link: ${post.backUrl}`);
             let parent_title = parent?.front_matter.title ?? "";
 
             const route = {
@@ -60,11 +60,11 @@ export default (posts: Post[]) => {
                     body: import_slot as any,
                     attr: post.front_matter,
                     toc: toc_slot as any,
-                    created: time_data.created,
-                    updated: time_data.updated,
+                    created: time.created,
+                    updated: time.updated,
                     type: post.type,
                     back: {
-                        link: post.back_link,
+                        link: post.backUrl,
                         title: parent_title,
                     },
                 } as RouteMeta,
@@ -74,7 +74,7 @@ export default (posts: Post[]) => {
                 JSON.stringify(route)
                     .replace(
                         `"${import_slot}"`,
-                        `() => import("${post.tsx_import_path}")`
+                        `() => import("${post.postImportPath}")`
                     )
                     .replace(`"${component_slot}"`, "note")
                     .replace(`"${toc_slot}"`, toc) + ",\n";

@@ -1,4 +1,4 @@
-import markdownItWrapper from "../../markdown-it-wrapper";
+import markdownItWrapper from "../markdown-it-wrapper";
 
 import type MarkdownIt from "markdown-it";
 

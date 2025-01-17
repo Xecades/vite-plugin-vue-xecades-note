@@ -32,5 +32,5 @@ export const THEMES: string[] = [
 ];
 
 export { default as typst } from "./typst";
-export { default as extractText } from "../../preprocess/utils/md/text";
-export { default as MarkdownItWrapper } from "../../markdown-it-wrapper";
+export { default as extractText } from "../../entry/text";
+export { default as MarkdownItWrapper } from "../markdown-it-wrapper";

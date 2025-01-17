@@ -2,10 +2,11 @@ import fs from "fs-extra";
 import yaml from "yaml";
 import chokidar from "chokidar";
 import { computed, ref, watchEffect } from "vue";
-import { Post } from "../utils/post";
 
 import type { Ref } from "vue";
-import type { Config, NavNode, RawConfig, RawNavNode } from "../../types";
+import type { RawConfig, RawNavNode } from "../convention";
+import type { Config, NavNode, NotePluginOptions } from "../global";
+import type { Entry, URL } from "../entry";
 
 /**
  * Read and parse YML config file to object.
@@ -33,7 +34,7 @@ const readYML = (path: string): Ref<RawConfig> => {
  * @param posts - Parsed post objects.
  * @returns Parsed nav data.
  */
-const parseNav = (raw: RawNavNode[], posts: Post[]): NavNode[] => {
+const parseNav = (raw: RawNavNode[], posts: Entry[]): NavNode[] => {
     const name_of = (node: RawNavNode) => Object.keys(node)[0];
     const title_of = (pathname: string) =>
         posts.filter((d) => d.pathname === pathname)[0].front_matter.title;
@@ -52,7 +53,7 @@ const parseNav = (raw: RawNavNode[], posts: Post[]): NavNode[] => {
             return {
                 title: title_of(pathname),
                 name: name,
-                link: path,
+                link: path as URL,
                 children: [],
             };
         } else {
@@ -65,7 +66,7 @@ const parseNav = (raw: RawNavNode[], posts: Post[]): NavNode[] => {
             const res: NavNode = {
                 title: title_of(pathname),
                 name: name,
-                link: path,
+                link: path as URL,
                 children: [],
             };
 
@@ -96,7 +97,7 @@ const parseNav = (raw: RawNavNode[], posts: Post[]): NavNode[] => {
  *
  * @param posts - Parsed post objects.
  */
-export default (posts: Post[]) => {
+export default (posts: Entry[], options: NotePluginOptions) => {
     const config_path: string = `./docs/config.yml`;
     const dist: string = `./cache/config.ts`;
 
@@ -107,7 +108,7 @@ export default (posts: Post[]) => {
         config.nav = parseNav(rawConfig.value.nav, posts);
 
         const cache =
-            'import type { Config } from "@script/types";\n' +
+            `import type { Config } from "${options.pluginName}";\n` +
             `const config: Config = ${JSON.stringify(config)};\n` +
             "export default config;\n";
 

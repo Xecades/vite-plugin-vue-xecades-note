@@ -1,11 +1,11 @@
 import { escape, extractText } from "../utils";
-import { sizeOf } from "../../preprocess/utils/image";
+import { sizeOf } from "../utils/image";
 import isRelativeUrl from "is-relative-url";
 import path from "path";
 
 import type MarkdownIt from "markdown-it";
 import type Token from "markdown-it/lib/token.mjs";
-import type { MarkdownItEnv } from "../../types";
+import type { MarkdownItEnv } from "../../global";
 
 /**
  * Transform image syntax `![...](...)` into `ImageCaptioned` component.
@@ -30,16 +30,16 @@ export default (md: MarkdownIt) => {
         let alt = extractText(caption) || "空";
         alt = escape(alt);
 
-        let size = env.post.await(async () => {
+        let size = env.entry.await(async () => {
             let r_src = isRelativeUrl(src)
-                ? path.join(path.dirname(env.post.pathname), src)
+                ? path.join(path.dirname(env.entry.pathname), src)
                 : src;
 
             return JSON.stringify(await sizeOf(r_src));
         });
 
         let u_src = isRelativeUrl(src)
-            ? "{" + env.post.use(src) + "}"
+            ? "{" + env.entry.use(src) + "}"
             : `"${src}"`;
 
         return `<ImageCaptioned alt={"${alt}"} src=${u_src} size={${size}}>${caption}</ImageCaptioned>`;

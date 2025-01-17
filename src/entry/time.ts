@@ -1,7 +1,9 @@
 import { simpleGit } from "simple-git";
-import type { SimpleGit } from "simple-git";
 
-export const timeDataOf = async (pathname: string) => {
+import type { SimpleGit } from "simple-git";
+import type { Pathname } from ".";
+
+export const timeOf = async (pathname: Pathname) => {
     const git: SimpleGit = simpleGit();
     const commits = await git.log({ file: pathname });
 

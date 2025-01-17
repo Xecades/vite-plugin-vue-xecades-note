@@ -1,8 +1,8 @@
 import MarkdownItMdc from "markdown-it-mdc";
 import { defaultRenderer, removeAttr, THEMES } from "../utils";
-import { Post } from "../../preprocess/utils/post";
+import { Entry } from "../../entry";
 
-import type { MarkdownItEnv } from "../../types";
+import type { MarkdownItEnv } from "../../global";
 import type MarkdownIt from "markdown-it";
 import type Token from "markdown-it/lib/token.mjs";
 
@@ -66,11 +66,11 @@ const convertToPlaceholder = (
  *
  * @param token - Token to convert
  */
-const convertShorthand = (token: Token, post: Post) => {
+const convertShorthand = (token: Token, entry: Entry) => {
     if (token.tag === "Index") {
         // For <Index /> Tag, attach the `target` attribute
         if (token.attrGet("target") === null) {
-            token.attrSet("target", post.link);
+            token.attrSet("target", entry.url);
         }
     }
 };
@@ -202,7 +202,7 @@ export default (md: MarkdownIt) => {
     ) => {
         const token = tokens[idx];
 
-        convertShorthand(token, env.post);
+        convertShorthand(token, env.entry);
         return originalMdcBlockShorthand(tokens, idx, options, env, self);
     };
 };

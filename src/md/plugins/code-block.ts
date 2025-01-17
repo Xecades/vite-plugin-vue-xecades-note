@@ -2,7 +2,7 @@ import markdownItPrism from "markdown-it-prism";
 import { defaultRenderer, escape, extractText, typst } from "../utils";
 
 import type MarkdownIt from "markdown-it";
-import type { MarkdownItEnv } from "../../types";
+import type { MarkdownItEnv } from "../../global";
 
 /**
  * Register code block syntax highlighting.
@@ -39,7 +39,7 @@ export default (md: MarkdownIt) => {
             let cap_html = md.renderInline(cap);
             let alt = extractText(cap_html) || "空";
 
-            let name: string = env.post.require(svg, ".svg");
+            let name: string = env.entry.require(svg, ".svg");
             let width: number = Number(svg.match(/^<svg.*?width="(\d+)/)![1]);
             let height: number = Number(svg.match(/^<svg.*?height="(\d+)/)![1]);
             let size: string = JSON.stringify({ width, height });

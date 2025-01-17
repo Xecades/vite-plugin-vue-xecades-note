@@ -1,18 +1,18 @@
-import { Post } from "../post";
 import { md } from "./parse";
+import { Entry } from ".";
 
-import type { MarkdownItEnv } from "../../../types";
 import type Token from "markdown-it/lib/token.mjs";
+import type { MarkdownItEnv } from "../global";
 
 /**
  * Render tokens to JSX string.
  *
  * @param tokens - Tokens
- * @param post - Post object
+ * @param entry - Entry object
  * @returns JSX string
  */
-export default (tokens: Token[], post: Post): string => {
+export default (tokens: Token[], entry: Entry): string => {
     return md.renderer
-        .render(tokens, md.options, { post } as MarkdownItEnv)
+        .render(tokens, md.options, { entry } as MarkdownItEnv)
         .replace(/<!--.*?-->/g, "");
 };

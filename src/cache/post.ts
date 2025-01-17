@@ -1,8 +1,10 @@
 import fs from "fs-extra";
 import camelCase from "camelcase";
 import injection from "../utils/injection";
-import { Post } from "../utils/post";
+import { Entry } from "../entry";
 import { watchEffect } from "vue";
+
+import type { NotePluginOptions } from "../global";
 
 const injectFontAwesome = (html: string): string => {
     const iconRegex: RegExp =
@@ -28,23 +30,23 @@ const injectFontAwesome = (html: string): string => {
     return res;
 };
 
-type Dependencies = typeof Post.prototype.dependencies;
+type Dependencies = typeof Entry.prototype.dependencies;
 const injectDependencies = (dep: Dependencies): string => {
     let res: string = "";
 
-    for (const { src, name } of dep) {
-        res += `import ${name} from "${src}";\n`;
+    for (const { src, id } of dep) {
+        res += `import ${id} from "${src}";\n`;
     }
 
     return res;
 };
 
-type Awaits = typeof Post.prototype.awaits;
+type Awaits = typeof Entry.prototype.awaits;
 const injectAwaits = async (awaits: Awaits): Promise<string> => {
     let res: string = "";
 
-    for (const { target, name } of awaits) {
-        res += `const ${name} = ${await target()};\n`;
+    for (const { target, id } of awaits) {
+        res += `const ${id} = ${await target()};\n`;
     }
 
     return res;
@@ -57,21 +59,24 @@ const injectAwaits = async (awaits: Awaits): Promise<string> => {
  *
  * @param posts - Parsed post objects.
  */
-export default (posts: Post[]) => {
+export default (posts: Entry[], options: NotePluginOptions) => {
     for (const post of posts) {
         watchEffect(async () => {
-            const dist: string = post.tsx_pathname;
+            const dist: string = post.postPathname;
 
             const cache: string =
-                injection() +
+                '<script setup lang="ts">\n' +
+                injection(options.componentDir) +
                 injectFontAwesome(post.html) +
                 injectDependencies(post.dependencies) +
                 (await injectAwaits(post.awaits)) +
-                `export default () => (<>\n${post.html}</>);\n`;
+                "</script>\n\n<template>\n" +
+                post.html +
+                "</template>\n";
 
             fs.outputFileSync(dist, cache);
 
-            console.log(`[Updated] ./${post.tsx_pathname}`);
+            console.log(`[Updated] ./${post.postPathname}`);
         });
     }
 };

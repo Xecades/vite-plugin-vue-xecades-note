@@ -13,15 +13,17 @@ const getMarkdownComps = (dir: string): string[] => {
         .map((file) => file.replace(/\.vue$/, ""));
 };
 
-const MD_DIR = "./src/components/md";
-const injections: string[] = getMarkdownComps(MD_DIR);
+let injections: string[] | null = null;
 
 /**
  * Inject import statements for markdown components.
  *
+ * @param compDir - Dir where markdown components are stored
  * @returns Import statements to be injected
  */
-export default (): string => {
+export default (compDir: string): string => {
+    if (injections === null) injections = getMarkdownComps(compDir);
+
     let res: string = "";
 
     for (const comp of injections) {
