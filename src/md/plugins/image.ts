@@ -1,4 +1,4 @@
-import { escape, extractText } from "../utils";
+import { extractText } from "../utils";
 import { sizeOf } from "../utils/image";
 import isRelativeUrl from "is-relative-url";
 import path from "path";
@@ -28,20 +28,26 @@ export default (md: MarkdownIt) => {
         );
 
         let alt = extractText(caption) || "空";
-        alt = escape(alt);
+        let alt_id = env.entry.expr(JSON.stringify(alt));
+        let alt_slot = env.tsx ? `alt={${alt_id}}` : `:alt="${alt_id}"`;
 
-        let size = env.entry.await(async () => {
+        let size_id = env.entry.await(async () => {
             let r_src = isRelativeUrl(src)
                 ? path.join(path.dirname(env.entry.pathname), src)
                 : src;
 
             return JSON.stringify(await sizeOf(r_src));
         });
+        let size_slot = env.tsx ? `size={${size_id}}` : `:size="${size_id}"`;
 
-        let u_src = isRelativeUrl(src)
-            ? "{" + env.entry.use(src) + "}"
-            : `"${src}"`;
+        let src_slot;
+        if (!isRelativeUrl(src)) {
+            src_slot = `src="${src}"`;
+        } else {
+            let src_id = env.entry.use(src);
+            src_slot = env.tsx ? `src={${src_id}}` : `:src="${src_id}"`;
+        }
 
-        return `<ImageCaptioned alt={"${alt}"} src=${u_src} size={${size}}>${caption}</ImageCaptioned>`;
+        return `<ImageCaptioned ${alt_slot} ${src_slot} ${size_slot}>${caption}</ImageCaptioned>`;
     };
 };

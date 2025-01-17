@@ -1,5 +1,10 @@
-import { escape, MarkdownItWrapper } from "../utils";
+import { MarkdownItWrapper } from "../utils";
+
+import type { MarkdownItEnv } from "../../global";
 import type MarkdownIt from "markdown-it";
+
+export const escape = (s: string): string =>
+    s.replaceAll("\\", "\\\\").replaceAll('"', '\\"').replaceAll("\n", "\\n");
 
 /**
  * Transform `$...$` and `$$...$$` into inline and block math components.
@@ -17,14 +22,19 @@ export default (md: MarkdownIt) => {
         name: "math_inline",
         marker: "$",
         renderer: (c: string) =>
-            `<InlineMath data={"${escape(c)}"}></InlineMath>`,
+            `<InlineMath data="${escape(c)}"></InlineMath>`,
     });
 
     md.use(MarkdownItWrapper, {
         type: "block",
         name: "math_block",
         marker: "$$",
-        renderer: (c: string) =>
-            `<BlockMath data={"${escape(c)}"}></BlockMath>`,
+        renderer: (c: string, env: MarkdownItEnv) => {
+            let content = JSON.stringify(c);
+            let id = env.entry.expr(content);
+
+            if (env.tsx) return `<BlockMath data={${id}}></BlockMath>`;
+            else return `<BlockMath :data="${id}"></BlockMath>`;
+        },
     });
 };

@@ -39,6 +39,14 @@ export interface Await {
     id: string;
 }
 
+export interface Expression {
+    /** Code content */
+    content: string;
+
+    /** Unique ID, used as variable name */
+    id: string;
+}
+
 export interface Entry {
     /**
      * Markdown file name, obtained when traversing.
@@ -68,6 +76,13 @@ export interface Entry {
     awaits: Await[];
 
     /**
+     * An expression is a piece of valid TSX code.
+     *
+     * Typically used for <></>-ish syntax.
+     */
+    expressions: Expression[];
+
+    /**
      * Time information of the entry.
      */
     time: { created: string; updated: string };
@@ -92,6 +107,7 @@ export class Entry {
         this.pathname = pathname;
         this.dependencies = [];
         this.awaits = [];
+        this.expressions = [];
     }
 
     /**
@@ -125,6 +141,7 @@ export class Entry {
         this._text = undefined;
         this.dependencies = [];
         this.awaits = [];
+        this.expressions = [];
     }
 
     /**
@@ -193,6 +210,19 @@ export class Entry {
     await(promise: () => Promise<string>): string {
         const id = `await_${this.awaits.length}`;
         this.awaits.push({ target: promise, id });
+        return id;
+    }
+
+    /**
+     * Use a piece of valid TSX code.
+     * 
+     * (e.g. ID: `expr_0`  Content: `<>JSX <span>Content</span></>`)
+     * 
+     * @param content - Code content.
+     */
+    expr(content: string): string {
+        const id = `expr_${this.expressions.length}`;
+        this.expressions.push({ content, id });
         return id;
     }
 
@@ -361,7 +391,7 @@ export class Entry {
      */
     get toc(): MarkdownHeader[] {
         if (this._toc === undefined) {
-            this._toc = toc(this.tokens);
+            this._toc = toc(this.tokens, this);
         }
         return this._toc;
     }

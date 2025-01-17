@@ -55,6 +55,9 @@ export type MarkdownHeaderJsx = Omit<MarkdownHeader, "title"> & {
 export interface MarkdownItEnv {
     /** Entry object */
     entry: Entry;
+
+    /** Is use TSX syntax */
+    tsx: boolean;
 }
 
 /**

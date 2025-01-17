@@ -1,9 +1,9 @@
 import fs from "fs-extra";
 import camelCase from "camelcase";
 import injection from "../utils/injection";
-import { Entry } from "../entry";
 import { watchEffect } from "vue";
 
+import type { Await, Dependency, Entry, Expression } from "../entry";
 import type { NotePluginOptions } from "../global";
 
 const injectFontAwesome = (html: string): string => {
@@ -30,23 +30,31 @@ const injectFontAwesome = (html: string): string => {
     return res;
 };
 
-type Dependencies = typeof Entry.prototype.dependencies;
-const injectDependencies = (dep: Dependencies): string => {
+const injectDependencies = (deps: Dependency[]): string => {
     let res: string = "";
 
-    for (const { src, id } of dep) {
+    for (const { src, id } of deps) {
         res += `import ${id} from "${src}";\n`;
     }
 
     return res;
 };
 
-type Awaits = typeof Entry.prototype.awaits;
-const injectAwaits = async (awaits: Awaits): Promise<string> => {
+const injectAwaits = async (awaits: Await[]): Promise<string> => {
     let res: string = "";
 
     for (const { target, id } of awaits) {
         res += `const ${id} = ${await target()};\n`;
+    }
+
+    return res;
+};
+
+const injectExpressions = (exprs: Expression[]): string => {
+    let res: string = "";
+
+    for (const { content, id } of exprs) {
+        res += `const ${id} = ${content};\n`;
     }
 
     return res;
@@ -65,11 +73,12 @@ export default (posts: Entry[], options: NotePluginOptions) => {
             const dist: string = post.postPathname;
 
             const cache: string =
-                '<script setup lang="ts">\n' +
+                '<script setup lang="tsx">\n' +
                 injection(options.componentDir) +
                 injectFontAwesome(post.html) +
                 injectDependencies(post.dependencies) +
                 (await injectAwaits(post.awaits)) +
+                injectExpressions(post.expressions) +
                 "</script>\n\n<template>\n" +
                 post.html +
                 "</template>\n";

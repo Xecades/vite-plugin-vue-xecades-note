@@ -1,15 +1,17 @@
 import { md } from "./parse";
 
 import type Token from "markdown-it/lib/token.mjs";
-import type { MarkdownHeader } from "../global";
+import type { MarkdownHeader, MarkdownItEnv } from "../global";
+import type { Entry } from ".";
 
 /**
  * Generate TOC from tokens.
  *
  * @param tokens - Tokens
+ * @param entry - Self entry
  * @returns Headers extracted from tokens
  */
-export default (tokens: Token[]): MarkdownHeader[] => {
+export default (tokens: Token[], entry: Entry): MarkdownHeader[] => {
     let headers: MarkdownHeader[] = [];
 
     for (let i = 0; i < tokens.length; i++) {
@@ -33,7 +35,7 @@ export default (tokens: Token[]): MarkdownHeader[] => {
             const title: string = md.renderer.renderInline(
                 children.slice(0, -3),
                 md.options,
-                {}
+                { entry, tsx: true } as MarkdownItEnv
             );
 
             headers.push({

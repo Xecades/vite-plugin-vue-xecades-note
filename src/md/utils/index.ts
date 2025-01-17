@@ -5,10 +5,6 @@ import type Token from "markdown-it/lib/token.mjs";
 export const defaultRenderer: RenderRule = (tokens, idx, options, env, self) =>
     self.renderToken(tokens, idx, options);
 
-/** Escape special characters in a string. */
-export const escape = (s: string): string =>
-    s.replaceAll("\\", "\\\\").replaceAll('"', '\\"').replaceAll("\n", "\\n");
-
 /**
  * Remove attribute on token.
  *

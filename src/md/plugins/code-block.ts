@@ -1,5 +1,5 @@
 import markdownItPrism from "markdown-it-prism";
-import { defaultRenderer, escape, extractText, typst } from "../utils";
+import { defaultRenderer, extractText, typst } from "../utils";
 
 import type MarkdownIt from "markdown-it";
 import type { MarkdownItEnv } from "../../global";
@@ -36,24 +36,31 @@ export default (md: MarkdownIt) => {
             // Process Typst code block
             let svg = typst(tokens[idx].content);
             let cap = meta || "";
-            let cap_html = md.renderInline(cap);
+            let cap_html = md.renderInline(cap, env);
             let alt = extractText(cap_html) || "空";
+            let alt_id = env.entry.expr(JSON.stringify(alt));
+            let alt_slot = env.tsx ? `alt={${alt_id}}` : `:alt="${alt_id}"`;
 
-            let name: string = env.entry.require(svg, ".svg");
-            let width: number = Number(svg.match(/^<svg.*?width="(\d+)/)![1]);
-            let height: number = Number(svg.match(/^<svg.*?height="(\d+)/)![1]);
-            let size: string = JSON.stringify({ width, height });
+            let src = env.entry.require(svg, ".svg");
+            let src_slot = env.tsx ? `{${src}}` : `{{${src}}}`;
 
-            return `<ImageCaptioned alt={"${alt}"} src={${name}} size={${size}}>${cap_html}</ImageCaptioned>`;
+            let width = Number(svg.match(/^<svg.*?width="(\d+)/)![1]);
+            let height = Number(svg.match(/^<svg.*?height="(\d+)/)![1]);
+
+            let size = JSON.stringify({ width, height });
+            let size_name = env.tsx ? "size" : ":size";
+
+            return `<ImageCaptioned ${alt_slot} src=${src_slot} ${size_name}='${size}'>${cap_html}</ImageCaptioned>`;
             //
         } else {
             // Process normal code block
-            let html = originalFence(tokens, idx, options, env, self).trim();
+            let html = originalFence(tokens, idx, options, env, self)
+                .trim()
+                .replace(/^<pre.*?>(.*)<\/pre>$/gs, (...m) => m[1]);
 
-            html = html.replace(/^<pre.*?>(.*)<\/pre>$/gs, (...m) => m[1]);
-            html = escape(html);
+            let id = env.entry.expr(JSON.stringify(html));
 
-            return `<BlockCode lang="${lang}" html={"${html}"}></BlockCode>`;
+            return `<BlockCode lang="${lang}" :html="${id}"></BlockCode>`;
             //
         }
     };

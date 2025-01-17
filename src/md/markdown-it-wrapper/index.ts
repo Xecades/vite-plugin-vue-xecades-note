@@ -198,7 +198,7 @@ export type MarkdownItWrapperOptions = {
     marker: string;
 
     /** Parser function. */
-    renderer: (content: string) => string;
+    renderer: (content: string, env?: any) => string;
 };
 
 /**
@@ -221,7 +221,7 @@ export default (md: MarkdownIt, args: MarkdownItWrapperOptions) => {
     }
 
     const renderer: RenderRule = (tokens, idx, options, env, self) =>
-        args.renderer(tokens[idx].content);
+        args.renderer(tokens[idx].content, env);
 
     md.renderer.rules[args.name] = renderer;
 };
