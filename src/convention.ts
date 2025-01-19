@@ -7,6 +7,9 @@ export interface MarkdownFrontMatter {
     /** Article title */
     title: string;
 
+    /** Display title */
+    displayTitle?: string;
+
     /** Whether to show comments */
     comment?: boolean;
 
