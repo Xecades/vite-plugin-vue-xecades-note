@@ -4,7 +4,7 @@ import type { MarkdownItEnv } from "../../global";
 import type MarkdownIt from "markdown-it";
 
 export const escape = (s: string): string =>
-    s.replaceAll("\\", "\\\\").replaceAll('"', '\\"').replaceAll("\n", "\\n");
+    s.replaceAll('"', '\\"').replaceAll("\n", "\\n");
 
 /**
  * Transform `$...$` and `$$...$$` into inline and block math components.

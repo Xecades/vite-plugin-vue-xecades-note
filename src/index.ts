@@ -10,6 +10,15 @@ import post from "./cache/post";
 
 const PLUGIN_NAME = "vite-plugin-vue-xecades-note";
 
+export const launch = async (options: NotePluginOptions) => {
+    const entries: Entry[] = await iter(options);
+
+    search(entries, options);
+    config(entries, options);
+    route(entries, options);
+    post(entries, options);
+};
+
 const plugin = (options: NotePluginOptions): PluginOption => {
     options.pluginName = options.pluginName ?? PLUGIN_NAME;
 
@@ -17,21 +26,18 @@ const plugin = (options: NotePluginOptions): PluginOption => {
         name: PLUGIN_NAME,
         enforce: "pre",
 
-        async buildStart() {
-            const entries: Entry[] = await iter(options);
-
-            search(entries, options);
-            config(entries, options);
-            route(entries, options);
-            post(entries, options);
-        },
+        buildStart: () => launch(options),
     };
 };
 
 export default plugin;
+export type { URL } from "./entry";
 export type {
     Config,
     CachedRouteRecord,
     CachedSearchFn,
     SearchTarget,
+    NavNode,
+    MarkdownHeaderJsx,
+    RouteMeta,
 } from "./global";
