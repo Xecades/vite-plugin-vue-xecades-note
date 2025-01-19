@@ -5,7 +5,7 @@
     "version": "0.0.1",
     "license": "GPL-3.0-only",
     "author": "Xecades <i@xecades.xyz>",
-    "description": "Plugin for Xecades Note, part of the Alpha Project.",
+    "description": "Plugin for Xecades Note, part of the Alpha project.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "sideEffects": false,
