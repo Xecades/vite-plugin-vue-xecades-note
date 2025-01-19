@@ -25,6 +25,7 @@ const plugin = (options: NotePluginOptions): PluginOption => {
     return {
         name: PLUGIN_NAME,
         enforce: "pre",
+        apply: "serve",
 
         buildStart: () => launch(options),
     };
