@@ -45,9 +45,9 @@ const transformBlock = (token: Token): boolean => {
 };
 
 /**
- * Transform a right tag to a div tag.
+ * Transform a right tag to a span tag.
  *
- * @example `<right>` => `<div class="right">`
+ * @example `<right>` => `<span class="right">`
  *
  * @param token - Token
  * @returns Whether the token is transformed
@@ -55,10 +55,10 @@ const transformBlock = (token: Token): boolean => {
 const transformRight = (token: Token): boolean => {
     if (token.type === "html_inline") {
         if (token.content === "<right>") {
-            token.content = '<div class="right">';
+            token.content = '<span class="right">';
             return true;
         } else if (token.content === "</right>") {
-            token.content = "</div>";
+            token.content = "</span>";
             return true;
         }
     }

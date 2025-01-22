@@ -44,13 +44,7 @@ export default (md: MarkdownIt) => {
             let src = env.entry.require(svg, ".svg");
             let src_slot = env.tsx ? `src={{${src}}}` : `:src="${src}"`;
 
-            let width = Number(svg.match(/^<svg.*?width="(\d+)/)![1]);
-            let height = Number(svg.match(/^<svg.*?height="(\d+)/)![1]);
-
-            let size = JSON.stringify({ width, height });
-            let size_name = env.tsx ? "size" : ":size";
-
-            return `<ImageCaptioned ${alt_slot} ${src_slot} ${size_name}='${size}'>${cap_html}</ImageCaptioned>`;
+            return `<ImageCaptioned ${alt_slot} ${src_slot}>${cap_html}</ImageCaptioned>`;
             //
         } else {
             // Process normal code block
