@@ -168,7 +168,6 @@ export const timeOf = async (pathname: Pathname) => {
     const gitUpdated = commits.latest!.date;
 
     const cached = override.find((item) => item.pathname === pathname);
-    console.log(cached);
 
     const created: string = cached ? cached.created : gitCreated;
     const updated: string =
