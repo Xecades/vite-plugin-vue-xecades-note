@@ -215,9 +215,9 @@ export class Entry {
 
     /**
      * Use a piece of valid TSX code.
-     * 
+     *
      * (e.g. ID: `expr_0`  Content: `<>JSX <span>Content</span></>`)
-     * 
+     *
      * @param content - Code content.
      */
     expr(content: string): string {
@@ -262,18 +262,20 @@ export class Entry {
      * Previous link.
      *
      * @example
-     *  "docs/cs/ads/avl-tree.md" -> "/cs/ads"
-     *  "docs/cs/index.md"        -> "/"
-     *  "docs/index.md"           -> "/"
-     *  "docs/404.md"             -> "/"
+     *  "docs/cs/ads/avl-tree.md" -> ['/', '/cs', '/cs/ads']
+     *  "docs/cs/index.md"        -> ['/']
+     *  "docs/index.md"           -> []
+     *  "docs/404.md"             -> ['/']
      */
-    get backUrl(): URL {
-        if (this.type == "root" || this.type == "404") {
-            return "/";
-        } else {
-            let res = this.url.replace(/\/[^/]+$/, "");
-            return res === "" ? "/" : (res as URL);
-        }
+    get backUrls(): URL[] {
+        if (this.type === "root") return [];
+
+        const parts = this.url.split("/");
+        const res = ["/"];
+        for (let i = 1; i < parts.length - 1; i++)
+            res.push(parts.slice(0, i + 1).join("/"));
+
+        return res as URL[];
     }
 
     /**

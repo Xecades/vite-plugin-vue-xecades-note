@@ -31,13 +31,13 @@ const readYML = (path: string): Ref<RawConfig> => {
  * Parse raw nav data to nav nodes.
  *
  * @param raw - Raw nav data to be parsed.
- * @param posts - Parsed post objects.
+ * @param entries - Parsed entry objects.
  * @returns Parsed nav data.
  */
-const parseNav = (raw: RawNavNode[], posts: Entry[]): NavNode[] => {
+const parseNav = (raw: RawNavNode[], entries: Entry[]): NavNode[] => {
     const name_of = (node: RawNavNode) => Object.keys(node)[0];
     const title_of = (pathname: string) =>
-        posts.filter((d) => d.pathname === pathname)[0].front_matter.title;
+        entries.filter((d) => d.pathname === pathname)[0].front_matter.title;
 
     /**
      * Recursively traverse and parse raw nav data.

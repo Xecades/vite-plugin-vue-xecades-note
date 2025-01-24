@@ -31,17 +31,17 @@ it("should handle filename", () => {
     }
 });
 
-it("should handle backURL", () => {
+it("should handle backUrls", () => {
     const tests = [
-        ["docs/cs/ads/avl-tree.md", "/cs/ads"],
-        ["docs/cs/index.md", "/"],
-        ["docs/index.md", "/"],
-        ["docs/404.md", "/"],
+        ["docs/cs/ads/avl-tree.md", ["/", "/cs", "/cs/ads"]],
+        ["docs/cs/index.md", ["/"]],
+        ["docs/index.md", []],
+        ["docs/404.md", ["/"]],
     ];
 
     for (const [input, expected] of tests) {
         const entry = new Entry(input as Pathname);
-        expect(entry.backUrl).toBe(expected);
+        expect(entry.backUrls).toStrictEqual(expected);
     }
 });
 

@@ -15,6 +15,9 @@ import type { NotePluginOptions, RouteMeta } from "../global";
 export default (entries: Entry[], options: NotePluginOptions) => {
     const dist: string = `./cache/routes.tsx`;
 
+    const title_of = (url: string) =>
+        entries.find((x) => x.url === url)?.front_matter.title ?? "";
+
     watchEffect(async () => {
         let cache: string = injection(options.componentDir);
         cache += `import type { CachedRouteRecord } from "${options.pluginName}";\n`;
@@ -41,13 +44,11 @@ export default (entries: Entry[], options: NotePluginOptions) => {
                     .join(",") +
                 "]";
 
-            const path: string =
-                post.type === "404" ? `/:pathMatch(.*)` : post.url;
-
-            let parent = entries.find((x) => x.url === post.backUrl);
-            if (parent === undefined)
-                throw new Error(`Invalid back link: ${post.backUrl}`);
-            let parent_title = parent?.front_matter.title ?? "";
+            const path = post.type === "404" ? `/:pathMatch(.*)` : post.url;
+            const breadcrumb = post.backUrls.map((x) => ({
+                title: title_of(x),
+                link: x,
+            }));
 
             const route = {
                 path: path,
@@ -60,10 +61,7 @@ export default (entries: Entry[], options: NotePluginOptions) => {
                     created: time.created,
                     updated: time.updated,
                     type: post.type,
-                    back: {
-                        link: post.backUrl,
-                        title: parent_title,
-                    },
+                    breadcrumb: breadcrumb,
                 } as RouteMeta,
             };
 

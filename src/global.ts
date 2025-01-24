@@ -121,8 +121,8 @@ export interface RouteMeta {
     /** Page type */
     type: Type;
 
-    /** Back link */
-    back: { title: string; link: URL };
+    /** Breadcrumb */
+    breadcrumb: { title: string; link: URL }[];
 
     /** Route scroll to */
     scrollTo?: { left: number; top: number };
