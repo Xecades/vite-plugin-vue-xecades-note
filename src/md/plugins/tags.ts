@@ -107,6 +107,7 @@ const transformMdc = (token: Token): boolean => {
         linkcard: "LinkCard",
         grid: "Grid",
         waterfall: "Waterfall",
+        "dot-pattern": "DotPattern",
     };
 
     if (token.type === "mdc_block_open" || token.type === "mdc_block_close") {
