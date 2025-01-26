@@ -96,8 +96,7 @@ export default (md: MarkdownIt) => {
      * @see https://github.com/antfu/markdown-it-mdc
      */
 
-    /** @note Disable `inlineSpan` to avoid conflict with {@link checkbox}. */
-    md.use(MarkdownItMdc, { syntax: { inlineSpan: false } });
+    md.use(MarkdownItMdc);
 
     const originalMdcBlockOpen =
         md.renderer.rules.mdc_block_open || defaultRenderer;
