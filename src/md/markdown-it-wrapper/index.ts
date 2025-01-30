@@ -1,4 +1,5 @@
 import type MarkdownIt from "markdown-it";
+import { Token } from "markdown-it";
 import type { RuleBlock } from "markdown-it/lib/parser_block.mjs";
 import type { RuleInline } from "markdown-it/lib/parser_inline.mjs";
 import type { RenderRule } from "markdown-it/lib/renderer.mjs";
@@ -198,7 +199,7 @@ export type MarkdownItWrapperOptions = {
     marker: string;
 
     /** Parser function. */
-    renderer: (content: string, env?: any) => string;
+    renderer: (token: Token, env?: any) => string;
 };
 
 /**
@@ -221,7 +222,7 @@ export default (md: MarkdownIt, args: MarkdownItWrapperOptions) => {
     }
 
     const renderer: RenderRule = (tokens, idx, options, env, self) =>
-        args.renderer(tokens[idx].content, env);
+        args.renderer(tokens[idx], env);
 
     md.renderer.rules[args.name] = renderer;
 };

@@ -2,6 +2,7 @@ import { MarkdownItWrapper } from "../utils";
 
 import type { MarkdownItEnv } from "../../global";
 import type MarkdownIt from "markdown-it";
+import { Token } from "markdown-it";
 
 export const escape = (s: string): string =>
     s.replaceAll('"', '\\"').replaceAll("\n", "\\n");
@@ -21,16 +22,16 @@ export default (md: MarkdownIt) => {
         type: "inline",
         name: "math_inline",
         marker: "$",
-        renderer: (c: string) =>
-            `<InlineMath data="${escape(c)}"></InlineMath>`,
+        renderer: (token: Token) =>
+            `<InlineMath data="${escape(token.content)}"></InlineMath>`,
     });
 
     md.use(MarkdownItWrapper, {
         type: "block",
         name: "math_block",
         marker: "$$",
-        renderer: (c: string, env: MarkdownItEnv) => {
-            let content = JSON.stringify(c);
+        renderer: (token: Token, env: MarkdownItEnv) => {
+            let content = JSON.stringify(token.content);
             let id = env.entry.expr(content);
 
             if (env.tsx) return `<BlockMath data={${id}}></BlockMath>`;

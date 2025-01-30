@@ -1,6 +1,5 @@
 import MarkdownItMdc from "markdown-it-mdc";
 import { defaultRenderer, removeAttr, THEMES } from "../utils";
-import { Entry } from "../../entry";
 
 import type { MarkdownItEnv } from "../../global";
 import type MarkdownIt from "markdown-it";
@@ -114,7 +113,7 @@ export default (md: MarkdownIt) => {
 
         convertToAttribute(token, { fold: THEMES, note: THEMES });
         convertToJsx(token, md, env, { fold: ["title"] });
-        convertToBoolean(token, { fold: ["expand"] });
+        convertToBoolean(token, { fold: ["always", "expand"] });
 
         return originalMdcBlockOpen(tokens, idx, options, env, self);
     };
