@@ -14,5 +14,10 @@ import type { MarkdownItEnv } from "../global";
 export default (tokens: Token[], entry: Entry): string => {
     return md.renderer
         .render(tokens, md.options, { entry, tsx: false } as MarkdownItEnv)
-        .replace(/<!--.*?-->/g, "");
+        .replaceAll(/<!--.*?-->/g, "")
+        .replaceAll(
+            // Fix checkbox conflict with mdc inlineSpan
+            /(<label for="cbx_\d+?">)<span>[x| ]<\/span> /gs,
+            (_, label) => label
+        );
 };
