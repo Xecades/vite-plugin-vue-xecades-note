@@ -25,8 +25,10 @@ export const lastUpdate = (entries: Entry[]) => {
 
 export const recentUpdates = (entries: Entry[]) => {
     const t = (e: Entry) => new Date(e.time.updated).getTime();
+    let count = 0;
     const toHtml = (e: Entry) => {
-        const icon = `<font-awesome-icon class="icon" icon="fa-solid fa-caret-right" />`;
+        const i = ["a", "b", "c"][count++];
+        const icon = `<font-awesome-icon class="icon" icon="fa-solid fa-${i}" />`;
         const fmt = "YYYY-MM-DD HH:mm:ss";
         const alt = `更新于 ${dayjs(e.time.updated).format(fmt)}`;
         return `<p> ${icon} <Anchor href="${e.url}" title="${alt}">${e.front_matter.title}</Anchor></p>`;
