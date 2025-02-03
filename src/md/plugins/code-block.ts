@@ -44,7 +44,10 @@ export default (md: MarkdownIt) => {
             let src = env.entry.require(svg, ".svg");
             let src_slot = env.tsx ? `src={{${src}}}` : `:src="${src}"`;
 
-            return `<ImageCaptioned ${alt_slot} ${src_slot}>${cap_html}</ImageCaptioned>`;
+            let cls = tokens[idx].attrGet("class");
+            let cls_slot = cls ? ` ${cls}` : "";
+
+            return `<ImageCaptioned class="svg${cls_slot}" ${alt_slot} ${src_slot}>${cap_html}</ImageCaptioned>`;
             //
         } else {
             // Process normal code block

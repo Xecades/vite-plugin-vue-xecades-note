@@ -25,7 +25,10 @@ export default (md: MarkdownIt) => {
             env
         );
 
-        let alt = extractText(caption) || "空";
+        let cls = tokens[idx].attrGet("class");
+        let cls_slot = cls ? ` class="${cls}"` : "";
+
+        let alt = extractText(caption) || "";
         let alt_id = env.entry.expr(JSON.stringify(alt));
         let alt_slot = env.tsx ? `alt={${alt_id}}` : `:alt="${alt_id}"`;
 
@@ -37,6 +40,6 @@ export default (md: MarkdownIt) => {
             src_slot = env.tsx ? `src={${src_id}}` : `:src="${src_id}"`;
         }
 
-        return `<ImageCaptioned ${alt_slot} ${src_slot}>${caption}</ImageCaptioned>`;
+        return `<ImageCaptioned${cls_slot} ${alt_slot} ${src_slot}>${caption}</ImageCaptioned>`;
     };
 };
