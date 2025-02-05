@@ -8,11 +8,10 @@ import type MarkdownIt from "markdown-it";
  * @param md - MarkdownIt instance
  */
 export default (md: MarkdownIt) => {
-    md.core.ruler.before("anchor", "h1_to_delim", (state) => {
+    md.core.ruler.after("block", "h1_to_delim", (state) => {
         for (const token of state.tokens) {
             if (token.tag !== "h1") continue;
-
-            let is_open: boolean = token.type === "heading_open";
+            let is_open = token.type === "heading_open";
 
             token.type = "delim_" + (is_open ? "open" : "close");
             token.tag = "Delimiter";

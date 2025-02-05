@@ -7,7 +7,6 @@ import { createHash } from "node:crypto";
 import { timeOf } from "./time";
 import fm from "./fm";
 import parse from "./parse";
-import toc from "./toc";
 import render from "./render";
 import text from "./text";
 
@@ -83,6 +82,11 @@ export interface Entry {
     expressions: Expression[];
 
     /**
+     * Table of contents.
+     */
+    toc: MarkdownHeader[];
+
+    /**
      * Time information of the entry.
      */
     time: { created: string; updated: string };
@@ -99,7 +103,6 @@ export class Entry {
     protected _front_matter?: MarkdownFrontMatter;
     protected _markdown?: string;
     protected _tokens?: Token[];
-    protected _toc?: MarkdownHeader[];
     protected _html?: string;
     protected _text?: string;
 
@@ -108,6 +111,7 @@ export class Entry {
         this.dependencies = [];
         this.awaits = [];
         this.expressions = [];
+        this.toc = [];
     }
 
     /**
@@ -136,12 +140,12 @@ export class Entry {
         this._front_matter = undefined;
         this._markdown = undefined;
         this._tokens = undefined;
-        this._toc = undefined;
         this._html = undefined;
         this._text = undefined;
         this.dependencies = [];
         this.awaits = [];
         this.expressions = [];
+        this.toc = [];
     }
 
     /**
@@ -386,16 +390,6 @@ export class Entry {
             this._tokens = parse(this.markdown, this);
         }
         return this._tokens;
-    }
-
-    /**
-     * Table of contents.
-     */
-    get toc(): MarkdownHeader[] {
-        if (this._toc === undefined) {
-            this._toc = toc(this.tokens, this);
-        }
-        return this._toc;
     }
 
     /**

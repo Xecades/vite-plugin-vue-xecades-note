@@ -46,7 +46,6 @@
         "fs-extra": "^11.3.0",
         "innertext": "^1.0.3",
         "is-relative-url": "^4.0.0",
-        "markdown-it-anchor": "^9.2.0",
         "markdown-it-for-inline": "^2.0.1",
         "markdown-it-mdc": "^0.2.5",
         "markdown-it-prism": "^2.3.0",
