@@ -20,7 +20,7 @@ export const lastUpdate = (entries: Entry[]) => {
     for (const entry of entries) {
         if (entry.time.updated > last) last = entry.time.updated;
     }
-    return dayjs(last).fromNow();
+    return `{{ dayjs("${last}").fromNow() }}`;
 };
 
 export const recentUpdates = (entries: Entry[]) => {

@@ -26,6 +26,7 @@ export default (compDir: string): string => {
 
     let res: string = "";
 
+    res += 'import dayjs from "@/assets/ts/dayjs";\n';
     for (const comp of injections) {
         res += `import ${comp} from "@/components/md/${comp}.vue";\n`;
     }
