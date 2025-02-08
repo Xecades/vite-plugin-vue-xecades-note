@@ -95,7 +95,9 @@ export default (md: MarkdownIt) => {
      * @see https://github.com/antfu/markdown-it-mdc
      */
 
-    md.use(MarkdownItMdc);
+    md.use(MarkdownItMdc, {
+        syntax: { inlineSpan: false, inlineProps: false },
+    });
 
     const originalMdcBlockOpen =
         md.renderer.rules.mdc_block_open || defaultRenderer;

@@ -14,7 +14,7 @@ export default (md: MarkdownIt) => {
      * @name markdown-it-prism
      * @see https://github.com/jGleitz/markdown-it-prism
      */
-    md.use(markdownItPrism);
+    md.use(markdownItPrism, { highlightInlineCode: true });
 
     const originalFence = md.renderer.rules.fence || defaultRenderer;
 

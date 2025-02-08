@@ -1,3 +1,5 @@
+import { defaultRenderer } from "../utils";
+
 import type MarkdownIt from "markdown-it";
 import type { MarkdownItEnv } from "../../global";
 
@@ -7,6 +9,8 @@ import type { MarkdownItEnv } from "../../global";
  * @param md - MarkdownIt instance
  */
 export default (md: MarkdownIt) => {
+    const originalCodeInline = md.renderer.rules.code_inline || defaultRenderer;
+
     md.renderer.rules.code_inline = (
         tokens,
         idx,
@@ -14,6 +18,12 @@ export default (md: MarkdownIt) => {
         env: MarkdownItEnv,
         self
     ) => {
+        if (tokens[idx].meta) {
+            // If it has language specified, use original renderer
+            tokens[idx].attrSet("class", "inline-code");
+            return originalCodeInline(tokens, idx, options, env, self);
+        }
+
         let content = JSON.stringify(tokens[idx].content);
         let id = env.entry.expr(content);
         let slot = env.tsx ? `{${id}}` : `{{${id}}}`;
