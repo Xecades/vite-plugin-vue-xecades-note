@@ -1,8 +1,7 @@
-import { extractText } from "../utils";
+import { defaultRenderer, extractText } from "../utils";
 import isRelativeUrl from "is-relative-url";
 
 import type MarkdownIt from "markdown-it";
-import type Token from "markdown-it/lib/token.mjs";
 import type { MarkdownItEnv } from "../../global";
 
 /**
@@ -18,15 +17,11 @@ export default (md: MarkdownIt) => {
         env: MarkdownItEnv,
         self
     ) => {
-        let src = tokens[idx].attrGet("src")!;
-        let caption = self.renderInline(
-            tokens[idx].children as Token[],
-            options,
-            env
-        );
+        const token = tokens[idx];
+        token.tag = "ImageCaptioned";
 
-        let cls = tokens[idx].attrGet("class");
-        let cls_slot = cls ? ` class="${cls}"` : "";
+        let src = token.attrGet("src")!;
+        let caption = self.renderInline(token.children!, options, env);
 
         let alt = extractText(caption) || "";
         let alt_id = env.entry.expr(JSON.stringify(alt));
@@ -40,6 +35,14 @@ export default (md: MarkdownIt) => {
             src_slot = env.tsx ? `src={${src_id}}` : `:src="${src_id}"`;
         }
 
-        return `<ImageCaptioned${cls_slot} ${alt_slot} ${src_slot}>${caption}</ImageCaptioned>`;
+        const ALT_PH = "@@alt@@";
+        const SRC_PH = "@@src@@";
+        token.attrSet("src", SRC_PH);
+        token.attrSet("alt", ALT_PH);
+
+        return defaultRenderer(tokens, idx, options, env, self)
+            .replace(/ \/>$/, `>${caption}</ImageCaptioned>`)
+            .replace(`alt="${ALT_PH}"`, alt_slot)
+            .replace(`src="${SRC_PH}"`, src_slot);
     };
 };
