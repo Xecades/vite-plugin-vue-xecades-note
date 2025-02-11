@@ -2,7 +2,7 @@
     "name": "vite-plugin-vue-xecades-note",
     "private": true,
     "type": "module",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "license": "GPL-3.0-only",
     "author": "Xecades <i@xecades.xyz>",
     "description": "Plugin for Xecades Note, part of the Alpha project.",
@@ -41,7 +41,6 @@
     "dependencies": {
         "@myriaddreamin/typst-ts-node-compiler": "^0.5.4",
         "camelcase": "^8.0.0",
-        "chokidar": "^4.0.3",
         "dayjs": "^1.11.13",
         "front-matter": "^4.0.2",
         "fs-extra": "^11.3.0",

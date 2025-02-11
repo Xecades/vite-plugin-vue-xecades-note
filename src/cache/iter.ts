@@ -1,21 +1,43 @@
-import traverse from "../utils/traverse";
 import { Entry } from "../entry";
+import walkSync from "walk-sync";
 
 import type { Pathname } from "../entry";
-import type { NotePluginOptions } from "../global";
 
 /**
- * Read and parse markdown files.
+ * Traverse a directory synchronously.
  *
- * @returns Parsed reactive post objects
+ * @see https://www.npmjs.com/package/walk-sync
  */
-export default async (options: NotePluginOptions): Promise<Entry[]> => {
-    const files: string[] = traverse("docs");
-    const posts: Entry[] = [];
+const traverse = (src: string): string[] =>
+    walkSync(src, {
+        directories: false,
+        globs: ["**/*.md"],
+        includeBasePath: true,
+    });
 
+let entries: Entry[] = [];
+let traversed = false;
+
+export const resetEntries = () => {
+    entries = [];
+    traversed = false;
+};
+
+export const addEntry = async (pathname: Pathname) => {
+    const entry = new Entry(pathname);
+    await entry.updateTime();
+    entries.push(entry);
+    return entry;
+};
+
+export default async () => {
+    if (traversed) return entries;
+
+    const files: string[] = traverse("docs");
     for (const pathname of files) {
-        posts.push(await Entry.reactive(pathname as Pathname));
+        await addEntry(pathname as Pathname);
     }
 
-    return posts;
+    traversed = true;
+    return entries;
 };

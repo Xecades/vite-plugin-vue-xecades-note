@@ -1,9 +1,6 @@
 import fs from "fs-extra";
 import yaml from "yaml";
-import chokidar from "chokidar";
-import { computed, ref, watchEffect } from "vue";
 
-import type { Ref } from "vue";
 import type { RawConfig, RawNavNode } from "../convention";
 import type { Config, NavNode, NotePluginOptions } from "../global";
 import type { Entry, URL } from "../entry";
@@ -14,17 +11,9 @@ import type { Entry, URL } from "../entry";
  * @param path - Path to the config file.
  * @returns Raw config data.
  */
-const readYML = (path: string): Ref<RawConfig> => {
-    const raw: Ref<string> = ref(fs.readFileSync(path, "utf-8"));
-
-    if (process.env.NODE_ENV == "development") {
-        chokidar.watch(path).on("change", () => {
-            raw.value = fs.readFileSync(path, "utf-8");
-            console.log(`[Modified] ${path}`);
-        });
-    }
-
-    return computed(() => yaml.parse(raw.value));
+const readYML = (path: string): RawConfig => {
+    const raw = fs.readFileSync(path, "utf-8");
+    return yaml.parse(raw);
 };
 
 /**
@@ -95,24 +84,20 @@ const parseNav = (raw: RawNavNode[], entries: Entry[]): NavNode[] => {
  *
  * @note This module caches `config.yml`.
  *
- * @param posts - Parsed post objects.
+ * @param entries - Parsed entry objects.
  */
-export default (posts: Entry[], options: NotePluginOptions) => {
-    const config_path: string = `./docs/config.yml`;
-    const dist: string = `./cache/config.ts`;
+export default (entries: Entry[], options: NotePluginOptions) => {
+    const config_path = "./docs/config.yml";
+    const dist = "./cache/config.ts";
 
-    const rawConfig: Ref<RawConfig> = readYML(config_path);
+    const raw: RawConfig = readYML(config_path);
+    const config: Config = { ...raw, nav: parseNav(raw.nav, entries) };
 
-    watchEffect(() => {
-        const config: Config = { ...rawConfig.value, nav: [] };
-        config.nav = parseNav(rawConfig.value.nav, posts);
+    const cache =
+        `import type { Config } from "${options.pluginName}";\n` +
+        `const config: Config = ${JSON.stringify(config)};\n` +
+        "export default config;\n";
 
-        const cache =
-            `import type { Config } from "${options.pluginName}";\n` +
-            `const config: Config = ${JSON.stringify(config)};\n` +
-            "export default config;\n";
-
-        fs.outputFileSync(dist, cache);
-        console.log(`[Updated] ${dist}`);
-    });
+    fs.outputFileSync(dist, cache);
+    console.log(`[Updated] ${dist} (Configuration)`);
 };

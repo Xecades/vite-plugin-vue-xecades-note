@@ -1,7 +1,5 @@
 import fs from "fs-extra";
 import path from "path";
-import chokidar from "chokidar";
-import { reactive } from "vue";
 import { createHash } from "node:crypto";
 
 import { timeOf } from "./time";
@@ -112,24 +110,6 @@ export class Entry {
         this.awaits = [];
         this.expressions = [];
         this.toc = [];
-    }
-
-    /**
-     * Create a reactive Entry object, and watch for file changes.
-     */
-    static async reactive(pathname: Pathname): Promise<Entry> {
-        const res = reactive(new Entry(pathname));
-        await res.updateTime();
-
-        if (process.env.NODE_ENV == "development") {
-            chokidar.watch(pathname).on("change", async () => {
-                res.resetCache();
-                await res.updateTime();
-                console.log(`[Modified] ./${pathname}`);
-            });
-        }
-
-        return res;
     }
 
     /**
