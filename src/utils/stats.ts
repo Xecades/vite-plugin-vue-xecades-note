@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime.js";
 import locale_zhcn from "dayjs/locale/zh-cn.js";
-import utc from "dayjs/plugin/utc";
+import utc from "dayjs/plugin/utc.js";
 import wc from "words-count";
 
 import type { Entry } from "../entry";
