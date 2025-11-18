@@ -11,6 +11,7 @@ import checkbox from "./plugins/checkbox";
 import mdc from "./plugins/mdc";
 import delim from "./plugins/delim";
 import tags from "./plugins/tags";
+import cjk from "./plugins/cjk";
 import attrs from "./plugins/attrs";
 
 /**
@@ -41,6 +42,7 @@ export default (): MarkdownIt => {
     md.use(mdc);
     md.use(delim);
     md.use(tags);
+    md.use(cjk);
     md.use(attrs);
 
     // console.log(md.core.ruler.__rules__.map((r) => r.name));
