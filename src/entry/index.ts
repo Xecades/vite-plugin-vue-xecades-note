@@ -7,8 +7,9 @@ import fm from "./fm";
 import parse from "./parse";
 import render from "./render";
 import text from "./text";
+import * as resolver from "./resolver";
 
-import type { Token } from "markdown-it";
+import type Token from "markdown-it/lib/token.mjs";
 import type { MarkdownFrontMatter } from "../convention";
 import type { MarkdownHeader } from "../global";
 
@@ -220,13 +221,7 @@ export class Entry {
      *  "docs/404.md"             -> "/404"
      */
     get url(): URL {
-        const res = this.pathname
-            .replace(/^docs\//, "/")
-            .replace(/\.md$/, "")
-            .replace(/index$/, "");
-
-        if (res === "/") return "/";
-        else return res.replace(/\/$/, "") as URL;
+        return resolver.getUrl(this.pathname);
     }
 
     /**
@@ -239,7 +234,7 @@ export class Entry {
      *  "docs/404.md"             -> "404"
      */
     get filename(): Filename {
-        return path.basename(this.url);
+        return resolver.getFilename(this.url);
     }
 
     /**
@@ -252,14 +247,7 @@ export class Entry {
      *  "docs/404.md"             -> ['/']
      */
     get backUrls(): URL[] {
-        if (this.type === "root") return [];
-
-        const parts = this.url.split("/");
-        const res = ["/"];
-        for (let i = 1; i < parts.length - 1; i++)
-            res.push(parts.slice(0, i + 1).join("/"));
-
-        return res as URL[];
+        return resolver.getBackUrls(this.url, this.type);
     }
 
     /**
@@ -272,13 +260,7 @@ export class Entry {
      *  "docs/404.md"             -> "cache/posts/404.vue"
      */
     get postPathname(): PostPathname {
-        const dist = `cache/posts`;
-
-        let res = this.pathname.replace(/^.+?\//, "");
-        res = res.replace(/\.md$/, ".vue");
-        res = path.join(dist, res);
-
-        return res as PostPathname;
+        return resolver.getPostPathname(this.pathname);
     }
 
     /**
@@ -291,7 +273,7 @@ export class Entry {
      *  "docs/404.md"             -> "@cache/posts/404"
      */
     get postImportPath(): PostImportPath {
-        return ("@" + this.postPathname.slice(0, -4)) as PostImportPath;
+        return resolver.getPostImportPath(this.postPathname);
     }
 
     /**
@@ -304,11 +286,7 @@ export class Entry {
      *  "docs/404.md"             -> ""
      */
     get category(): string {
-        if (this.type === "root" || this.type === "404") {
-            return "";
-        } else {
-            return this.url.split("/")[1];
-        }
+        return resolver.getCategory(this.url, this.type);
     }
 
     /**
@@ -321,15 +299,7 @@ export class Entry {
      *  "docs/404.md"             -> "404"
      */
     get type(): Type {
-        if (this.pathname === "docs/404.md") {
-            return "404";
-        } else if (this.pathname === "docs/index.md") {
-            return "root";
-        } else if (this.pathname.endsWith("/index.md")) {
-            return "index";
-        } else {
-            return "post";
-        }
+        return resolver.getType(this.pathname);
     }
 
     /**

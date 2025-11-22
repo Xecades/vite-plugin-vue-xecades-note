@@ -1,4 +1,5 @@
 import fs from "fs-extra";
+import { generateVueComponent } from "./template";
 import * as inject from "../utils/inject";
 
 import type { Entry } from "../entry";
@@ -14,17 +15,7 @@ export const updateSomePosts = async (
         const html = inject.slots(entry.html, entries);
         if (!targets.includes(entry) && html == entry.html) continue;
 
-        const cache =
-            '<script setup lang="tsx">\n' +
-            'import dayjs from "@/assets/ts/dayjs";\n' +
-            inject.markdownComps(options.componentDir) +
-            inject.fontawesome(html) +
-            inject.dependencies(entry.dependencies) +
-            (await inject.awaits(entry.awaits)) +
-            inject.expressions(entry.expressions) +
-            "</script>\n\n<template>\n" +
-            html +
-            "</template>\n";
+        const cache = await generateVueComponent(entry, html, options);
 
         fs.outputFileSync(dist, cache);
 
