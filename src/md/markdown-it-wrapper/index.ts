@@ -1,5 +1,5 @@
 import type MarkdownIt from "markdown-it";
-import { Token } from "markdown-it";
+import type Token from "markdown-it/lib/token.mjs";
 import type { RuleBlock } from "markdown-it/lib/parser_block.mjs";
 import type { RuleInline } from "markdown-it/lib/parser_inline.mjs";
 import type { RenderRule } from "markdown-it/lib/renderer.mjs";
