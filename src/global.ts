@@ -72,6 +72,9 @@ export interface SearchTarget {
 
     /** Whether is index file, i.e. pathname ends with `index.md` */
     is_index: boolean;
+
+    /** Creation time */
+    created: string;
 }
 
 /**

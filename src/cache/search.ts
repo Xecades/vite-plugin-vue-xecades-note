@@ -31,8 +31,10 @@ export default (entries: Entry[], options: NotePluginOptions) => {
                 content: entry.text,
                 link: entry.url,
                 is_index: entry.type === "index" || entry.type === "root",
+                created: entry.time.created,
             })
-        );
+        )
+        .sort((a, b) => (a.created < b.created ? 1 : -1));
 
     const index = Fuse.createIndex(Fuse_Options.keys!, searchTarget);
 
