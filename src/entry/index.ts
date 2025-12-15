@@ -357,7 +357,7 @@ export class Entry {
      */
     get text(): string {
         if (this._text === undefined) {
-            this._text = text(this.html);
+            this._text = text(this.tokens);
         }
         return this._text;
     }

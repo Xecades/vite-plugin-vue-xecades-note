@@ -1,3 +1,4 @@
+import type Token from "markdown-it/lib/token.mjs";
 // @ts-ignore
 import innerText from "innertext";
 
@@ -16,7 +17,7 @@ const expr_regex = /{{expr_[0-9]+}}/g;
  *
  * @see https://www.npmjs.com/package/innertext
  */
-export default (html: string): string => {
+const fromHtml = (html: string): string => {
     // Sanitize math tags
     html = html.replaceAll(inline_math_regex, "[公式]");
     html = html.replaceAll(block_math_regex, "[公式]");
@@ -26,4 +27,68 @@ export default (html: string): string => {
     html = html.replaceAll(anchor_regex, "");
 
     return innerText(html);
+};
+
+const block_tags = [
+    "paragraph_close",
+    "heading_close",
+    "blockquote_close",
+    "bullet_list_close",
+    "ordered_list_close",
+    "list_item_close",
+    "table_close",
+    "tr_close",
+    "div_close",
+];
+
+const extract = (tokens: Token[]): string => {
+    let result = "";
+    for (const token of tokens) {
+        if (token.children && token.children.length > 0) {
+            result += extract(token.children);
+        } else {
+            if (
+                token.type === "text" ||
+                token.type === "code_inline" ||
+                token.type === "fence" ||
+                token.type === "math_inline" ||
+                token.type === "math_block"
+            ) {
+                result += token.content;
+            }
+
+            if (token.type === "softbreak") {
+                result += " ";
+            } else if (token.type === "hardbreak") {
+                result += "\n";
+            }
+        }
+
+        if (
+            block_tags.includes(token.type) ||
+            token.type === "fence" ||
+            token.type === "math_block"
+        ) {
+            result += "\n";
+        }
+    }
+    return result;
+};
+
+/**
+ * Extract raw text from Markdown tokens, which is used for generating search index.
+ *
+ * @param tokens - Markdown tokens
+ * @returns Plain text
+ */
+const fromTokens = (tokens: Token[]): string => {
+    return extract(tokens);
+};
+
+export default (input: string | Token[]): string => {
+    if (typeof input === "string") {
+        return fromHtml(input);
+    } else {
+        return fromTokens(input);
+    }
 };
