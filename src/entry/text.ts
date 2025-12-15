@@ -41,6 +41,8 @@ const block_tags = [
     "div_close",
 ];
 
+const newcmd_head = /\\newcommand\s*{\\([a-zA-Z]+)}\s*(?:\[(\d+)])?\s*{/g;
+
 const extract = (tokens: Token[]): string => {
     let result = "";
     for (const token of tokens) {
@@ -54,7 +56,14 @@ const extract = (tokens: Token[]): string => {
                 token.type === "math_inline" ||
                 token.type === "math_block"
             ) {
-                result += token.content;
+                if (
+                    (token.type === "math_inline" || token.type === "math_block")
+                    && token.content.match(newcmd_head)
+                ) {
+                    // Skip macro definitions
+                } else {
+                    result += token.content;
+                }
             }
 
             if (token.type === "softbreak") {
