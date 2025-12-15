@@ -8,6 +8,7 @@ export const generateVueComponent = async (
     options: NotePluginOptions
 ): Promise<string> => {
     const imports = [
+        'import { provide } from "vue";',
         'import dayjs from "@/assets/ts/dayjs";',
         inject.markdownComps(options.componentDir),
         inject.fontawesome(html),
@@ -17,6 +18,7 @@ export const generateVueComponent = async (
         .join("\n");
 
     const setupCode = [
+        'provide("katex-macros", {});',
         await inject.awaits(entry.awaits),
         inject.expressions(entry.expressions),
     ]
