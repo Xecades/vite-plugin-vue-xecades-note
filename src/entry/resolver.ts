@@ -6,15 +6,15 @@ import type {
     PostPathname,
     PostImportPath,
     Type,
-} from "./index";
+} from "./index.ts";
 
 export const getUrl = (pathname: Pathname): URL => {
     const res = pathname
         .replace(/^docs\//, "/")
         .replace(/\.md$/, "")
-        .replace(/index$/, "");
+        .replace(/\/index$/, "");
 
-    if (res === "/") return "/";
+    if (res === "" || res === "/") return "/";
     else return res.replace(/\/$/, "") as URL;
 };
 
@@ -25,8 +25,7 @@ export const getBackUrls = (url: URL, type: Type): URL[] => {
 
     const parts = url.split("/");
     const res = ["/"];
-    for (let i = 1; i < parts.length - 1; i++)
-        res.push(parts.slice(0, i + 1).join("/"));
+    for (let i = 1; i < parts.length - 1; i++) res.push(parts.slice(0, i + 1).join("/"));
 
     return res as URL[];
 };

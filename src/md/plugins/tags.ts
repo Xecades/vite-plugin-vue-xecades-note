@@ -1,4 +1,4 @@
-import { removeAttr } from "../utils";
+import { removeAttr } from "../utils/index.ts";
 
 import type MarkdownIt from "markdown-it";
 import type Token from "markdown-it/lib/token.mjs";
@@ -31,7 +31,7 @@ const transformBlock = (token: Token): boolean => {
         console.assert(token.type === "mdc_block_shorthand");
         console.assert(
             token.attrs && token.attrs.length === 1,
-            "v tag should have 1 attribute"
+            "v tag should have 1 attribute",
         );
 
         let value: string = token.attrs![0][0];

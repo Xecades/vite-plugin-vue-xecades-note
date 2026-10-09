@@ -9,6 +9,7 @@ it("should handle url", () => {
         ["docs/cs/index.md", "/cs"],
         ["docs/index.md", "/"],
         ["docs/404.md", "/404"],
+        ["docs/reindex.md", "/reindex"],
     ];
 
     for (const [input, expected] of tests) {

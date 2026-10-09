@@ -1,144 +1,40 @@
-import type { JSX } from "vue/jsx-runtime";
 import type { FuseResult } from "fuse.js";
 import type { RouteRecordSingleView } from "vue-router";
-import type { Entry, Pathname, Type, URL } from "./entry";
-import type { MarkdownFrontMatter, RawConfig } from "./convention";
-
-export const assertType = <T>(value: any): T => value as unknown as T;
+import type { Pathname, Type, URL } from "./entry/identity.ts";
+import type { MarkdownFrontMatter } from "./convention.ts";
+import type { HeadingData } from "./compiler/types.ts";
 
 export interface NotePluginOptions {
-    /** The directory where markdown components are stored. */
     componentDir: string;
-
-    /** Name of the plugin. */
-    pluginName?: string;
 }
-
-/**
- * Parsed front matter.
- */
-export interface MarkdownFrontMatterParsed {
-    /** Front matter attributes */
-    front_matter: MarkdownFrontMatter;
-
-    /** Raw markdown content */
-    markdown: string;
-}
-
-/**
- * Header extracted from markdown.
- */
-export interface MarkdownHeader {
-    /** Header level */
-    level: number;
-
-    /** Header title HTML */
-    title: string;
-
-    /** Header permalink */
-    hash: string;
-}
-
-/**
- * Header extracted from markdown, title is JSX element
- */
-export type MarkdownHeaderJsx = Omit<MarkdownHeader, "title"> & {
-    title: JSX.Element;
-};
-
-/**
- * MarkdownIt environment.
- */
-export interface MarkdownItEnv {
-    /** Entry object */
-    entry: Entry;
-
-    /** Is use TSX syntax */
-    tsx: boolean;
-}
-
-/**
- * The object passed to fuse.js to be indexed.
- */
-export interface SearchTarget {
-    /** Article title */
-    title: string;
-
-    /** Purged article content */
-    content: string;
-
-    /** Article link */
-    link: URL;
-
-    /** Whether is index file, i.e. pathname ends with `index.md` */
-    is_index: boolean;
-
-    /** Creation time */
-    created: string;
-}
-
-/**
- * Parsed nav node.
- */
 export interface NavNode {
-    /** Nav title */
     title: string;
-
-    /** Nav name, e.g. `cs`, `math` */
     name: string;
-
-    /** Link to the article */
     link: URL;
-
-    /** Children nodes */
     children: NavNode[];
 }
-
-/**
- * Parsed configurations.
- */
-export type Config = Omit<RawConfig, "nav"> & { nav: NavNode[] };
-
-/**
- * Route meta data.
- */
-export interface RouteMeta {
-    /** Pathname of local markdown file */
-    pathname: Pathname;
-
-    /** Category of the route, empty string for `/index` and 404 page */
-    category: string;
-
-    /** Parsed front matter */
-    attr: MarkdownFrontMatter;
-
-    /** Table of contents */
-    toc: MarkdownHeaderJsx[];
-
-    /** Creation time */
-    created: string;
-
-    /** Last modified time */
-    updated: string;
-
-    /** Page type */
-    type: Type;
-
-    /** Breadcrumb */
-    breadcrumb: { title: string; link: URL }[];
-
-    /** Route scroll to */
-    scrollTo?: { left: number; top: number };
+export interface Config {
+    nav: NavNode[];
+    icon: Record<string, string>;
 }
-
-/**
- * Cached route record.
- */
-export type CachedRouteRecord = RouteRecordSingleView & { meta: RouteMeta };
-
-/**
- * Cached search function.
- */
+export interface SearchTarget {
+    title: string;
+    content: string;
+    link: URL;
+    is_index: boolean;
+    created: string;
+}
+export interface RouteMeta extends Record<string | number | symbol, unknown> {
+    pathname: Pathname;
+    category: string;
+    attr: MarkdownFrontMatter;
+    toc: HeadingData[];
+    created: string;
+    updated: string;
+    type: Type;
+    breadcrumb: { title: string; link: URL }[];
+}
+export type CachedRouteRecord = Omit<RouteRecordSingleView, "meta"> & { meta: RouteMeta };
 export type CachedSearchFn = (
-    query: string
-) => SearchTarget[] | FuseResult<SearchTarget>[];
+    query: string,
+) => FuseResult<SearchTarget>[] | SearchTarget[];
